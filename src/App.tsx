@@ -1,19 +1,11 @@
 import React from 'react';
-import { ApolloProvider, gql , useQuery } from "@apollo/client"
-
-const ME = gql`
-  query me {
-    user(login: "TakayaSugiyama"){
-      name
-      avatarUrl
-    }
-  }
-`
+import { gql , useQuery } from "@apollo/client"
+import { ME } from "./graphql"
 
 function App() {
   const { loading, error, data } = useQuery(ME)
   if (loading) return <p>loading</p>
-  console.log({data})
+  if (error) return <p>{ error.message }</p>
   return (
     <div>{data.user.name}</div>
   );
