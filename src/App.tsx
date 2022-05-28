@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from "@apollo/client"
 import { ME, searchRepository } from "./graphql"
 
@@ -7,16 +7,20 @@ const VARIABLES = {
   before: null,
   first: 5,
   last: null,
-  query: "フロントエンドエンジニア"
+  query: ""
 }
 
 function App() {
-  const { loading, error, data } = useQuery(searchRepository, { variables: { ...VARIABLES } })
-  if (loading) return <p>loading</p>
+  const [query, setQuery] = useState("Ruby on Rails")
+  const { loading, error, data } = useQuery(searchRepository, { variables: { ...VARIABLES, query: query } })
   if (error) return <p>{ error.message }</p>
   console.log(data)
   return (
-    <div></div>
+    <div>
+      <form>
+        <input onChange={(e) => setQuery(e.target.value)} value={query}/>
+      </form>
+    </div>
   );
 }
 
