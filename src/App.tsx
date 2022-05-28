@@ -1,10 +1,21 @@
 import React from 'react';
+import { ApolloProvider, gql , useQuery } from "@apollo/client"
 
-const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN
+const ME = gql`
+  query me {
+    user(login: "TakayaSugiyama"){
+      name
+      avatarUrl
+    }
+  }
+`
 
 function App() {
+  const { loading, error, data } = useQuery(ME)
+  if (loading) return <p>loading</p>
+  console.log({data})
   return (
-    <div>Hello GraphQL</div>
+    <div>{data.user.name}</div>
   );
 }
 
