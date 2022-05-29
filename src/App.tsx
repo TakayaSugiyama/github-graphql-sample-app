@@ -5,8 +5,8 @@ import { searchRepository, addStar, removeStar } from "./graphql"
 const PER_PAGE = 5
 
 const StarButton = (props: any) => {
-  const [addStarFunction, { error}] = useMutation(addStar)
-  const [removeStarFunction] = useMutation(removeStar)
+  const [addStarFunction, { error}] = useMutation(addStar, { refetchQueries: [{ query: searchRepository, variables: { ...props.pageInfo, query: props.query }  }] })
+  const [removeStarFunction] = useMutation(removeStar,  { refetchQueries: [{ query: searchRepository, variables: { ...props.pageInfo, query: props.query }  }] })
   if(props.node === undefined) return <button></button>
   const starCount = props.node.stargazers.totalCount
   const buttonContent = starCount === 1 ? "1 star": `${starCount} stars`
@@ -83,7 +83,7 @@ function App() {
             return (
               <li key={edge.node.id}>
                 <a href={edge.node.url} target="_blank" rel="noopener noreferrer">{ edge.node.name }</a>
-                <StarButton node={edge.node}/>
+                <StarButton node={edge.node} query={query} pageInfo={{...pageInfo}}/>
               </li>
             )
         })
