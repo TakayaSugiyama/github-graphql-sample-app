@@ -1,17 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery } from "@apollo/client"
-import { searchRepository } from "./graphql"
+import React, { useState } from 'react';
+import { useQuery, useMutation } from "@apollo/client"
+import { searchRepository, addStar } from "./graphql"
 
 const PER_PAGE = 5
 
 const StarButton = (props: any) => {
+  const [addStarFunction, { error}] = useMutation(addStar)
   if(props.node === undefined) return <button></button>
   const starCount = props.node.stargazers.totalCount
   const buttonContent = starCount === 1 ? "1 star": `${starCount} stars`
   const starStatus = props.node.viewerHasStarred ? "stared": "-"
 
+  const mutationHandler = () => {
+    addStarFunction({ variables: { input: { starrableId: props.node.id}}})
+    if(error){
+      console.log(error)
+    }
+  }
+
   return (
-    <button>
+    <button onClick={mutationHandler}>
       { buttonContent } | { starStatus }
     </button>
   )
@@ -25,7 +33,7 @@ const DEFAULT_STATUS = {
 }
 
 function App() {
-  const [query, setQuery] = useState("")
+  const [query, setQuery] = useState("フロントエンドエンジニア")
   const [pageInfo, setPageInfo] = useState<any>({...DEFAULT_STATUS})
 
   const { error, data } = useQuery(searchRepository, { variables: { ...pageInfo, query: query }})

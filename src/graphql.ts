@@ -8,6 +8,17 @@ export const ME = gql`
   }
 `;
 
+export const addStar = gql`
+  mutation addStar($input: AddStarInput!) {
+    addStar(input: $input) {
+      starrable {
+        id
+        viewerHasStarred
+      }
+    }
+  }
+`;
+
 export const searchRepository = gql`
   query searchRepos(
     $after: String
