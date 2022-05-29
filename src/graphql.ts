@@ -8,6 +8,17 @@ export const ME = gql`
   }
 `;
 
+export const removeStar = gql`
+  mutation removeStar($input: RemoveStarInput!) {
+    removeStar(input: $input) {
+      starrable {
+        id
+        viewerHasStarred
+      }
+    }
+  }
+`;
+
 export const addStar = gql`
   mutation addStar($input: AddStarInput!) {
     addStar(input: $input) {

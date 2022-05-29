@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from "@apollo/client"
-import { searchRepository, addStar } from "./graphql"
+import { searchRepository, addStar, removeStar } from "./graphql"
 
 const PER_PAGE = 5
 
 const StarButton = (props: any) => {
   const [addStarFunction, { error}] = useMutation(addStar)
+  const [removeStarFunction] = useMutation(removeStar)
   if(props.node === undefined) return <button></button>
   const starCount = props.node.stargazers.totalCount
   const buttonContent = starCount === 1 ? "1 star": `${starCount} stars`
   const starStatus = props.node.viewerHasStarred ? "stared": "-"
 
   const mutationHandler = () => {
-    addStarFunction({ variables: { input: { starrableId: props.node.id}}})
+    if(props.node.viewerHasStarred){
+      removeStarFunction({ variables: { input: { starrableId: props.node.id}}})
+    }else{
+      addStarFunction({ variables: { input: { starrableId: props.node.id}}})
+    }
     if(error){
       console.log(error)
     }
