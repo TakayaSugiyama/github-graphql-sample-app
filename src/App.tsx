@@ -4,6 +4,12 @@ import { searchRepository } from "./graphql"
 
 const PER_PAGE = 5
 
+const StarButton = (props: any) => {
+  if(props.node === undefined) return <button></button>
+  const starCount = props.node.stargazers.totalCount
+  return <button>{ starCount === 1 ? "1 star": `${starCount} stars` }</button>
+}
+
 const DEFAULT_STATUS = {
   after: null,
   before: null,
@@ -53,7 +59,14 @@ function App() {
       { data === undefined ? <p>loading...</p> : <h1>{title}</h1> }
       <ul>
         {
-          data !== undefined  && data.search.edges.map((edge: any) => <li key={edge.node.id}><a href={edge.node.url} target="_blank">{ edge.node.name }</a></li>)
+          data !== undefined  && data.search.edges.map((edge: any) => {
+            return (
+              <li key={edge.node.id}>
+                <a href={edge.node.url} target="_blank" rel="noopener noreferrer">{ edge.node.name }</a>
+                <StarButton node={edge.node}/>
+              </li>
+            )
+        })
         }
       </ul>
       { data !== undefined && data.search.pageInfo.hasPreviousPage ? <button onClick={previousButton}>Previous</button>  : null}
