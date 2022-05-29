@@ -7,7 +7,14 @@ const PER_PAGE = 5
 const StarButton = (props: any) => {
   if(props.node === undefined) return <button></button>
   const starCount = props.node.stargazers.totalCount
-  return <button>{ starCount === 1 ? "1 star": `${starCount} stars` }</button>
+  const buttonContent = starCount === 1 ? "1 star": `${starCount} stars`
+  const starStatus = props.node.viewerHasStarred ? "stared": "-"
+
+  return (
+    <button>
+      { buttonContent } | { starStatus }
+    </button>
+  )
 }
 
 const DEFAULT_STATUS = {
