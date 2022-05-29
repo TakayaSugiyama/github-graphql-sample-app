@@ -11,7 +11,7 @@ const DEFAULT_STATUS = {
 }
 
 function App() {
-  const [query, setQuery] = useState("Ruby on Rails")
+  const [query, setQuery] = useState("")
 
   const { error, data } = useQuery(searchRepository, { variables: { ...DEFAULT_STATUS, query: query }})
 
@@ -23,15 +23,18 @@ function App() {
   const repoUnit = repoCount === 1 ? "Repository" : "Repositories"
   const title = `GitHub Repositories Search Result ${repoCount} ${repoUnit}`
 
-  console.log(data)
-
   if (error) return <p>{ error.message }</p>
   return (
     <div>
       <form>
         <input onChange={(e) =>fetchApiData(e)} value={query}/>
       </form>
-      <h1>{ title }</h1>
+      { data === undefined ? <p>loading...</p> : <h1>{title}</h1> }
+      <ul>
+        {
+          data !== undefined  && data.search.edges.map((edge: any) => <li key={edge.node.id}><a href={edge.node.url} target="_blank">{ edge.node.name }</a></li>)
+        }
+      </ul>
     </div>
   );
 }
