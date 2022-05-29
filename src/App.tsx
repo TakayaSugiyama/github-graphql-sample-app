@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from "@apollo/client"
 import { searchRepository } from "./graphql"
-import { Data } from "./type"
 
 const DEFAULT_STATUS = {
   after: null,
