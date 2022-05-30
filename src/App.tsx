@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from "@apollo/client"
 import { searchRepository, addStar, removeStar } from "./graphql"
+import { produce } from "immer"
 
 const PER_PAGE = 5
 
 const StarButton = (props: any) => {
-  const [addStarFunction, { error}] = useMutation(addStar, { refetchQueries: [{ query: searchRepository, variables: { ...props.pageInfo, query: props.query }  }] })
-  const [removeStarFunction] = useMutation(removeStar,  { refetchQueries: [{ query: searchRepository, variables: { ...props.pageInfo, query: props.query }  }] })
+  const [addStarFunction, { error}] = useMutation(addStar)
+  const [removeStarFunction] = useMutation(removeStar)
   if(props.node === undefined) return <button></button>
   const starCount = props.node.stargazers.totalCount
   const buttonContent = starCount === 1 ? "1 star": `${starCount} stars`
@@ -14,9 +15,61 @@ const StarButton = (props: any) => {
 
   const mutationHandler = () => {
     if(props.node.viewerHasStarred){
-      removeStarFunction({ variables: { input: { starrableId: props.node.id}}})
+      removeStarFunction({ variables: { input: { starrableId: props.node.id}}, update: store => {
+        const data: any = store.readQuery({
+          query: searchRepository,
+          variables: { ...props.pageInfo, query: props.query}
+        })
+        const edges = data.search.edges
+        const newEdges = produce(edges, (draft: any)=> {
+          draft.map((edge: any)=> {
+            if(edge.node.id === props.node.id){
+              const totalCount = edge.node.stargazers.totalCount
+              const diff = props.node.viewerHasStarred ? -1 : 1
+              const newTotalCount = totalCount + diff
+              edge.node.stargazers.totalCount = newTotalCount
+            }
+            return edge
+          })
+        })
+        store.writeQuery({
+          query: searchRepository,
+          data: {
+            search: {
+              ...data.search,
+              edges: newEdges
+            }
+          }
+        })
+      }})
     }else{
-      addStarFunction({ variables: { input: { starrableId: props.node.id}}})
+      addStarFunction({ variables: { input: { starrableId: props.node.id}}, update: store => {
+        const data: any = store.readQuery({
+          query: searchRepository,
+          variables: { ...props.pageInfo, query: props.query}
+        })
+        const edges = data.search.edges
+        const newEdges = produce(edges, (draft: any)=> {
+          draft.map((edge: any)=> {
+            if(edge.node.id === props.node.id){
+              const totalCount = edge.node.stargazers.totalCount
+              const diff = props.node.viewerHasStarred ? -1 : 1
+              const newTotalCount = totalCount + diff
+              edge.node.stargazers.totalCount = newTotalCount
+            }
+            return edge
+          })
+        })
+        store.writeQuery({
+          query: searchRepository,
+          data: {
+            search: {
+              ...data.search,
+              edges: newEdges
+            }
+          }
+        })
+      }})
     }
     if(error){
       console.log(error)

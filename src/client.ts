@@ -6,8 +6,6 @@ import {
 } from "@apollo/client";
 const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN;
 
-console.log(GITHUB_TOKEN);
-
 const cache = new InMemoryCache();
 
 const endpoint = "https://api.github.com/graphql";
